@@ -8,28 +8,39 @@ public class Main {
 
     public void showApplianceSelection() {
         String[] options = {"Refrigerator", "Ceiling Fan", "Light", "Air Conditioner"};
-        int choice = JOptionPane.showOptionDialog(null, "Please choose the appliance you want to calculate the result for", "Appliance Choice", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        int choice = JOptionPane.showOptionDialog(
+                null,
+                "Please choose the appliance you want to calculate the result for",
+                "Appliance Choice",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
 
         switch (choice) {
             case 0:
-                new RefrigiratorGUI(new Main());
+                new RefrigiratorGUI(this);
                 break;
             case 1:
-                new FanGui(new Main());
+                new FanGui(this);
                 break;
             case 2:
-                new LightGui(new Main());
+                new LightGui(this);
                 break;
             case 3:
-                new AirConditioner(new Main());
+                new AirConditioner(this);
                 break;
             default:
                 JOptionPane.showMessageDialog(
                         null,
                         "No Appliance Selected",
                         "Error",
-                        JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.WARNING_MESSAGE
+                );
                 break;
         }
     }
+
 }

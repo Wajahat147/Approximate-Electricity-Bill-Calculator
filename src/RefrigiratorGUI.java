@@ -3,104 +3,109 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 public class RefrigiratorGUI extends JFrame implements ActionListener {
-    JButton button,button2;
+    JButton button, button2;
     JLabel label1, label2, label3, labelImage;
     JTextField textField1, textField2;
-
+    private Main main;
     public RefrigiratorGUI(Main main) {
-        setLayout(new BorderLayout());
+        this.main = main;
+        setTitle("Refrigerator");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(700, 500);
+        setLocationRelativeTo(null); // Center on screen
+        setLayout(new BorderLayout(10, 10));
 
-        JPanel topPanel = new JPanel(new GridLayout(4, 1));
-        JPanel bottomPanel = new JPanel(new FlowLayout());
+        // Top panel with input fields and buttons
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+        topPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        label1 = new JLabel("Amount of Hours Refrigirator is used: ");
-        label2 = new JLabel("Amount of Watts Your Refrigirator is: ");
+        label1 = new JLabel("Amount of Hours Refrigerator is used:");
+        label2 = new JLabel("Wattage of Your Refrigerator:");
         label3 = new JLabel(" ");
+        label3.setForeground(Color.BLUE);
+
+        Font labelFont = new Font("Segoe UI", Font.PLAIN, 16);
+        label1.setFont(labelFont);
+        label2.setFont(labelFont);
+        label3.setFont(new Font("Segoe UI", Font.BOLD, 16));
 
         textField1 = new JTextField(10);
         textField2 = new JTextField(10);
 
         button = new JButton("Calculate");
         button2 = new JButton("Choose Another Appliance");
+
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button2.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
         button.addActionListener(this);
         button2.addActionListener(this);
-    
-        try {
-            ImageIcon icon = new ImageIcon("D:\\Java Programs\\ELECTRICITY BILL CALCULATOR\\src\\pngegg.png"); // Replace with your image file path
-            Image img = icon.getImage();
-            Image scaledImg = img.getScaledInstance(500, 500, Image.SCALE_SMOOTH);
-            ImageIcon scaledIcon = new ImageIcon(scaledImg);
-            labelImage = new JLabel(scaledIcon);
-            bottomPanel.add(labelImage);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
 
         topPanel.add(label1);
         topPanel.add(textField1);
+        topPanel.add(Box.createVerticalStrut(10));
         topPanel.add(label2);
         topPanel.add(textField2);
+        topPanel.add(Box.createVerticalStrut(20));
         topPanel.add(button);
+        topPanel.add(Box.createVerticalStrut(10));
         topPanel.add(button2);
+        topPanel.add(Box.createVerticalStrut(20));
         topPanel.add(label3);
 
-        add(topPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
+        // Image panel
+        JPanel imagePanel = new JPanel();
+        try {
+            ImageIcon icon = new ImageIcon("F:\\Java_Project\\Approximate-Electricity-Bill-Calculator\\src\\pngegg.png");
+            Image scaledImg = icon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+            labelImage = new JLabel(new ImageIcon(scaledImg));
+            imagePanel.add(labelImage);
+        } catch (Exception ex) {
+            labelImage = new JLabel("Image not found");
+            imagePanel.add(labelImage);
+        }
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1920, 1080);
-        setTitle("Refrigirator");
+        add(topPanel, BorderLayout.CENTER);
+        add(imagePanel, BorderLayout.EAST);
+
         setVisible(true);
     }
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == button) {
             try {
-                String Hours = textField1.getText();
-                String Watts = textField2.getText();
+                double hours = Double.parseDouble(textField1.getText());
+                double watts = Double.parseDouble(textField2.getText());
+                double kwh = ((watts * hours) * 30) / 1000;
+                double unitprice = 0;
 
-                double hours = Double.parseDouble(Hours);
-                double watts = Double.parseDouble(Watts);
-                double kwh;
-                double unitprice=0;
-                double bill;
-                if (hours >= 1 && hours <= 24) {
-                    kwh = ((watts * hours) * 30) / 1000;
+                if (hours < 1 || hours > 24) {
+                    label3.setText("Please enter valid hours (1-24).");
+                    return;
+                }
 
-                    if (kwh >= 1 && kwh <= 50) {
-                        unitprice = 4.81;
-                    } else if (kwh > 50 && kwh <= 100) {
-                        unitprice = 7.87;
-                    } else if (kwh > 100 && kwh <= 200) {
-                        unitprice = 10.54;
-                    } else if (kwh > 200 && kwh <= 300) {
-                        unitprice = 12.89;
-                    } else if (kwh > 300 && kwh <= 700) {
-                        unitprice = 21.88;
-                    } else if (kwh > 700) {
-                        unitprice = 24.93;
-                    }
-                    bill = kwh * unitprice;
-                    label3.setText("Your Approximate Monthly Electricity Bill will be: " + bill);
-                }
-                else
-                {
-                    label3.setText("Please Enter Valid amount of Hours ");
-                }
-            }
-            catch (Exception exception)
-            {
+                if (kwh <= 100) unitprice = 39;
+                else if (kwh <= 200) unitprice = 41;
+                else if (kwh <= 300) unitprice = 42;
+                else if (kwh <= 400) unitprice = 43;
+                else if (kwh <= 500) unitprice = 43;
+                else if (kwh <= 600) unitprice = 43;
+                else if (kwh <= 700) unitprice = 44;
+                else unitprice = 45;
+
+
+                double bill = kwh * unitprice;
+                label3.setText("Approx. Monthly Bill: PKR " + String.format("%.2f", bill) + "Units:" + String.format("%.2f", kwh) + "KWH");
+            } catch (Exception ex) {
                 label3.setText("Invalid Input");
             }
-        }
-        else if(e.getSource() == button2)
-        {
+        } else if (e.getSource() == button2) {
             dispose();
-            Main mainInstance = new Main();
-            mainInstance.showApplianceSelection(); // Call the method using an instance
 
-            
+            main.showApplianceSelection();
         }
     }
 }
