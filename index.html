@@ -1,176 +1,300 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Electricity Bill Calculator — NEPRA 2025</title>
   <meta name="description"
-    content="Calculate your monthly electricity bill using Pakistan's NEPRA 2025 residential tariff for any home appliance." />
+    content="Pakistan's smartest electricity bill calculator. NEPRA 2025 rates, all appliances, real-time calculation." />
+  <meta name="theme-color" content="#0d1117" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap"
     rel="stylesheet" />
   <style>
-    /* ── Reset & Base ─────────────────────────────────────────── */
+    :root {
+      --bg: #0d1117;
+      --bg2: #131922;
+      --bg3: #1c2433;
+      --bg4: #243044;
+      --accent: #38bdf8;
+      --accent2: #818cf8;
+      --accent3: #34d399;
+      --glow: rgba(56, 189, 248, 0.18);
+      --txt: #f1f5f9;
+      --txt2: #94a3b8;
+      --txt3: #64748b;
+      --border: rgba(255, 255, 255, 0.07);
+      --success: #34d399;
+      --warn: #fbbf24;
+      --danger: #f87171;
+      --r: 16px;
+      --r2: 12px;
+      --sidebar: 260px;
+      --trans: .25s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f4f8;
+      --bg2: #ffffff;
+      --bg3: #e8edf4;
+      --bg4: #dde4ef;
+      --txt: #0f172a;
+      --txt2: #475569;
+      --txt3: #94a3b8;
+      --border: rgba(0, 0, 0, 0.08);
+    }
+
     *,
     *::before,
     *::after {
       box-sizing: border-box;
       margin: 0;
-      padding: 0;
+      padding: 0
     }
 
-    :root {
-      --bg-dark: #0d1117;
-      --bg-panel: #131922;
-      --bg-card: #1c2433;
-      --bg-card-sel: #1a3a5c;
-      --accent: #38bdf8;
-      --accent-glow: #0ea5e9;
-      --accent-dim: rgba(56, 189, 248, 0.12);
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
-      --text-label: #64748b;
-      --border: #1e2a3b;
-      --success: #34d399;
-      --success-bg: rgba(52, 211, 153, 0.08);
-      --warning: #fbbf24;
-      --warning-bg: rgba(251, 191, 36, 0.08);
-      --error: #f87171;
-      --error-bg: rgba(248, 113, 113, 0.08);
-      --radius: 14px;
-      --sidebar-w: 230px;
+    html {
+      scroll-behavior: smooth
     }
 
-    html,
     body {
-      height: 100%;
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg-dark);
-      color: var(--text);
-      overflow: hidden;
+      font-family: 'Outfit', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--txt);
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background var(--trans), color var(--trans)
     }
 
-    /* ── Layout ───────────────────────────────────────────────── */
-    .app {
+    /* Aurora background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 0%, rgba(56, 189, 248, .12), transparent),
+        radial-gradient(ellipse 60% 50% at 80% 100%, rgba(129, 140, 248, .1), transparent),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(52, 211, 153, .06), transparent);
+      animation: aurora 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes aurora {
+      0% {
+        opacity: .8;
+        transform: scale(1) rotate(0deg)
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1.05) rotate(2deg)
+      }
+    }
+
+    /* ── Layout ── */
+    .shell {
+      position: relative;
+      z-index: 1;
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      min-height: 100vh
     }
 
-    /* ── Header ───────────────────────────────────────────────── */
-    .header {
+    /* ── Header ── */
+    header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 14px 28px;
-      background: var(--bg-panel);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
       gap: 16px;
+      flex-shrink: 0;
+      background: rgba(13, 17, 23, .7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
-    .header-left {
+    .hd-left {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 14px
     }
 
-    .header-bolt {
-      font-size: 30px;
-      filter: drop-shadow(0 0 8px var(--accent));
-      animation: pulse-bolt 2.5s ease-in-out infinite;
+    .bolt {
+      font-size: 28px;
+      animation: pulse 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 10px var(--accent))
     }
 
-    @keyframes pulse-bolt {
+    @keyframes pulse {
 
       0%,
       100% {
-        filter: drop-shadow(0 0 6px var(--accent));
+        filter: drop-shadow(0 0 6px var(--accent))
       }
 
       50% {
-        filter: drop-shadow(0 0 16px var(--accent));
+        filter: drop-shadow(0 0 20px var(--accent))
       }
     }
 
-    .header-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.2;
+    .hd-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -.3px
     }
 
-    .header-sub {
+    .hd-sub {
       font-size: 11px;
       color: var(--accent);
       font-weight: 500;
       letter-spacing: .4px;
+      margin-top: 1px
     }
 
-    .tariff-badge {
+    .hd-right {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .badge {
       padding: 5px 14px;
-      border: 1px solid rgba(56, 189, 248, 0.35);
+      border: 1px solid rgba(56, 189, 248, .3);
       border-radius: 999px;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--accent);
-      background: var(--accent-dim);
-      white-space: nowrap;
+      background: var(--glow);
       letter-spacing: .3px;
+      white-space: nowrap
     }
 
-    /* ── Body ────────────────────────────────────────────────── */
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      transition: all var(--trans);
+      color: var(--txt)
+    }
+
+    .icon-btn:hover {
+      background: var(--bg4);
+      border-color: var(--accent);
+      transform: scale(1.05)
+    }
+
+    /* ── Body ── */
     .body {
       display: flex;
       flex: 1;
       overflow: hidden;
+      height: calc(100vh - 65px)
     }
 
-    /* ── Sidebar ─────────────────────────────────────────────── */
-    .sidebar {
-      width: var(--sidebar-w);
-      background: var(--bg-panel);
+    /* ── Sidebar ── */
+    aside {
+      width: var(--sidebar);
+      flex-shrink: 0;
+      background: rgba(19, 25, 34, .8);
+      backdrop-filter: blur(16px);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      padding: 18px 10px;
-      gap: 4px;
+      padding: 16px 10px;
+      gap: 3px;
       overflow-y: auto;
-      flex-shrink: 0;
     }
 
-    .sidebar-heading {
+    aside::-webkit-scrollbar {
+      width: 4px
+    }
+
+    aside::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px
+    }
+
+    .sb-head {
       font-size: 9px;
       font-weight: 700;
-      letter-spacing: 1.2px;
-      color: var(--text-label);
-      padding: 0 8px 10px;
+      letter-spacing: 1.5px;
+      color: var(--txt3);
       text-transform: uppercase;
+      padding: 4px 10px 8px
     }
 
+    /* Search */
+    .search-wrap {
+      position: relative;
+      margin-bottom: 8px
+    }
+
+    .search-wrap input {
+      width: 100%;
+      padding: 9px 12px 9px 34px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg3);
+      color: var(--txt);
+      font-size: 12px;
+      font-family: 'Outfit', sans-serif;
+      outline: none;
+      transition: all var(--trans);
+    }
+
+    .search-wrap input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--glow)
+    }
+
+    .search-wrap input::placeholder {
+      color: var(--txt3)
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 13px;
+      opacity: .5
+    }
+
+    /* App cards */
     .app-card {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px 12px;
+      gap: 11px;
+      padding: 10px 12px;
       border-radius: 10px;
       cursor: pointer;
-      transition: background .18s, box-shadow .18s;
       border: 1px solid transparent;
+      transition: all var(--trans);
       position: relative;
+      overflow: hidden;
     }
 
     .app-card:hover {
-      background: var(--bg-card);
+      background: var(--bg3)
     }
 
     .app-card.active {
-      background: var(--bg-card-sel);
-      border-color: rgba(56, 189, 248, 0.35);
-      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.15) inset;
+      background: rgba(56, 189, 248, .1);
+      border-color: rgba(56, 189, 248, .3)
     }
 
     .app-card.active::before {
@@ -181,28 +305,40 @@
       bottom: 20%;
       width: 3px;
       background: var(--accent);
-      border-radius: 0 3px 3px 0;
+      border-radius: 0 3px 3px 0
     }
 
-    .app-card-icon {
-      font-size: 22px;
-      line-height: 1;
+    .card-icon {
+      font-size: 20px;
       flex-shrink: 0;
+      line-height: 1
     }
 
-    .app-card-name {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
+    .card-txt {
+      display: flex;
+      flex-direction: column;
+      gap: 1px
     }
 
-    /* Tariff slab mini table */
-    .slab-box {
+    .card-name {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--txt)
+    }
+
+    .card-watt {
+      font-size: 10px;
+      color: var(--txt3)
+    }
+
+    /* Slab panel */
+    .slab-panel {
       margin-top: auto;
-      padding: 12px 12px;
-      background: rgba(14, 165, 233, 0.07);
-      border: 1px solid rgba(56, 189, 248, 0.18);
-      border-radius: 10px;
+      padding: 12px;
+      background: rgba(56, 189, 248, .06);
+      border: 1px solid rgba(56, 189, 248, .15);
+      border-radius: 12px;
+      flex-shrink: 0
     }
 
     .slab-title {
@@ -210,8 +346,8 @@
       font-weight: 700;
       letter-spacing: 1px;
       color: var(--accent);
-      margin-bottom: 8px;
       text-transform: uppercase;
+      margin-bottom: 8px
     }
 
     .slab-row {
@@ -219,716 +355,1389 @@
       justify-content: space-between;
       font-size: 10px;
       font-family: 'JetBrains Mono', monospace;
-      color: var(--text-muted);
-      padding: 2px 0;
+      color: var(--txt2);
+      padding: 2px 0
     }
 
     .slab-row .rate {
       color: var(--accent);
-      font-weight: 600;
+      font-weight: 600
     }
 
-    /* ── Main Content ────────────────────────────────────────── */
-    .main {
+    /* ── Main ── */
+    main {
       flex: 1;
       overflow-y: auto;
+      padding: 32px 28px;
       display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 36px 24px;
+      flex-direction: column;
+      gap: 28px
     }
 
-    .calc-wrapper {
-      width: 100%;
-      max-width: 540px;
+    main::-webkit-scrollbar {
+      width: 5px
     }
 
-    /* Appliance heading */
-    .appl-heading {
+    main::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px
+    }
+
+    /* Appliance hero */
+    .appl-hero {
       display: flex;
       align-items: center;
-      gap: 14px;
-      margin-bottom: 28px;
+      gap: 18px
     }
 
-    .appl-emoji {
-      font-size: 44px;
-      line-height: 1;
-      transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+    .appl-emoji-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, .15), rgba(129, 140, 248, .1));
+      border: 1px solid rgba(56, 189, 248, .2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      flex-shrink: 0;
+      transition: all var(--trans);
     }
 
-    .appl-emoji.pop {
-      transform: scale(1.25);
+    .appl-emoji-wrap.pop {
+      transform: scale(1.15) rotate(-5deg)
     }
 
-    .appl-name {
+    .appl-info h1 {
       font-size: 28px;
       font-weight: 800;
-      color: var(--text);
-      transition: opacity .2s;
+      letter-spacing: -.5px;
+      line-height: 1.1
     }
 
-    /* Input Card */
-    .input-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px 26px;
-      margin-bottom: 14px;
+    .appl-info p {
+      font-size: 13px;
+      color: var(--txt2);
+      margin-top: 4px
     }
 
-    .field-group {
-      margin-bottom: 18px;
-    }
-
-    .field-group:last-child {
-      margin-bottom: 0;
-    }
-
-    .field-label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
+    .typical-watt {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 11px;
       font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 8px;
+      color: var(--accent);
+      background: var(--glow);
+      border: 1px solid rgba(56, 189, 248, .2);
+      padding: 3px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all var(--trans)
+    }
+
+    .typical-watt:hover {
+      background: rgba(56, 189, 248, .2)
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      background: var(--bg3);
+      padding: 5px;
+      border-radius: 12px;
+      width: fit-content;
+      flex-wrap: wrap
+    }
+
+    .tab {
+      padding: 7px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--trans);
+      color: var(--txt2);
+      border: none;
+      background: transparent;
+      font-family: 'Outfit', sans-serif
+    }
+
+    .tab.active {
+      background: var(--accent);
+      color: #000;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, .4)
+    }
+
+    /* Glass cards */
+    .glass {
+      background: rgba(28, 36, 51, .6);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 24px;
+    }
+
+    [data-theme="light"] .glass {
+      background: rgba(255, 255, 255, .8)
+    }
+
+    /* Inputs */
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px
+    }
+
+    @media(max-width:580px) {
+      .input-grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .5px;
+      letter-spacing: .6px;
+      color: var(--txt2);
+      margin-bottom: 8px
     }
 
-    .field-label span {
-      font-size: 14px;
+    .input-wrap {
+      position: relative
     }
 
-    .field-input {
+    .input-wrap input {
       width: 100%;
-      padding: 12px 16px;
-      background: var(--bg-dark);
+      padding: 13px 50px 13px 16px;
       border: 1.5px solid var(--border);
       border-radius: 10px;
-      color: var(--text);
-      font-size: 15px;
+      background: var(--bg);
+      color: var(--txt);
+      font-size: 16px;
       font-family: 'JetBrains Mono', monospace;
-      font-weight: 500;
+      font-weight: 600;
       outline: none;
-      transition: border-color .2s, box-shadow .2s;
+      transition: all var(--trans);
     }
 
-    .field-input::placeholder {
-      color: var(--text-label);
-      font-family: 'Inter', sans-serif;
+    .input-wrap input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--glow)
+    }
+
+    .input-wrap input::placeholder {
+      font-family: 'Outfit', sans-serif;
       font-size: 13px;
       font-weight: 400;
+      color: var(--txt3)
     }
 
-    .field-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15), 0 0 16px rgba(56, 189, 248, 0.08);
+    .input-unit {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--txt3);
+      pointer-events: none
     }
 
     .field-hint {
       font-size: 11px;
-      color: var(--text-label);
-      margin-top: 5px;
+      color: var(--txt3);
+      margin-top: 6px
     }
 
-    /* Error banner */
-    .error-msg {
+    /* Slider */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      flex: 1;
+      height: 4px;
+      border-radius: 4px;
+      background: linear-gradient(to right, var(--accent) var(--pct, 50%), var(--bg4) var(--pct, 50%));
+      outline: none;
+      cursor: pointer
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      cursor: pointer;
+      transition: transform .15s
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.2)
+    }
+
+    .slider-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 36px;
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace
+    }
+
+    /* Error */
+    .err {
       display: none;
       align-items: center;
       gap: 8px;
-      padding: 10px 14px;
-      background: var(--error-bg);
-      border: 1px solid rgba(248, 113, 113, 0.3);
-      border-radius: 8px;
+      padding: 12px 16px;
+      background: rgba(248, 113, 113, .1);
+      border: 1px solid rgba(248, 113, 113, .3);
+      border-radius: 10px;
       font-size: 13px;
-      color: var(--error);
-      margin-bottom: 14px;
+      color: var(--danger);
+      animation: fadeIn .2s
     }
 
-    .error-msg.show {
-      display: flex;
+    .err.show {
+      display: flex
     }
 
-    /* Calculate Button */
+    /* Calc button */
     .calc-btn {
       width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, #0ea5e9, #0369a1);
+      padding: 16px;
       border: none;
-      border-radius: 11px;
-      color: #fff;
-      font-size: 15px;
-      font-weight: 700;
-      font-family: 'Inter', sans-serif;
+      border-radius: 12px;
       cursor: pointer;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
       letter-spacing: .3px;
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      color: #fff;
       position: relative;
       overflow: hidden;
-      transition: transform .15s, box-shadow .15s;
-      margin-bottom: 24px;
+      transition: all var(--trans);
+      box-shadow: 0 4px 20px rgba(14, 165, 233, .3);
     }
 
     .calc-btn::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(255, 255, 255, .12), transparent);
+      background: linear-gradient(135deg, rgba(255, 255, 255, .15), transparent);
       opacity: 0;
-      transition: opacity .2s;
+      transition: opacity var(--trans)
     }
 
     .calc-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 24px rgba(14, 165, 233, .35);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(14, 165, 233, .45)
     }
 
     .calc-btn:hover::before {
-      opacity: 1;
+      opacity: 1
     }
 
     .calc-btn:active {
-      transform: translateY(0);
+      transform: translateY(0)
     }
 
-    /* ── Result Card ─────────────────────────────────────────── */
+    .calc-btn.loading::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .2), transparent);
+      animation: shimmer 1s infinite
+    }
+
+    @keyframes shimmer {
+      0% {
+        transform: translateX(-100%)
+      }
+
+      100% {
+        transform: translateX(100%)
+      }
+    }
+
+    /* Live indicator */
+    .live-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--success);
+      font-weight: 600
+    }
+
+    .live-dot::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: blink 1.4s ease-in-out infinite;
+      box-shadow: 0 0 6px var(--success)
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+
+    /* ── Result card ── */
     .result-card {
-      border-radius: var(--radius);
-      padding: 24px 26px;
+      border-radius: var(--r);
+      padding: 24px;
       border: 1px solid;
       display: none;
-      animation: slideUp .35s cubic-bezier(.34, 1.3, .64, 1);
+      animation: slideUp .4s cubic-bezier(.34, 1.3, .64, 1)
     }
 
     .result-card.show {
-      display: block;
+      display: block
     }
 
     @keyframes slideUp {
       from {
         opacity: 0;
-        transform: translateY(18px);
+        transform: translateY(24px)
       }
 
       to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0)
       }
     }
 
     .result-card.green {
-      background: var(--success-bg);
-      border-color: rgba(52, 211, 153, .3);
+      background: rgba(52, 211, 153, .06);
+      border-color: rgba(52, 211, 153, .25)
     }
 
     .result-card.yellow {
-      background: var(--warning-bg);
-      border-color: rgba(251, 191, 36, .3);
+      background: rgba(251, 191, 36, .06);
+      border-color: rgba(251, 191, 36, .25)
     }
 
     .result-card.red {
-      background: var(--error-bg);
-      border-color: rgba(248, 113, 113, .3);
+      background: rgba(248, 113, 113, .06);
+      border-color: rgba(248, 113, 113, .25)
     }
 
-    .result-header {
+    .result-top {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .result-badge {
-      font-size: 12px;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 999px;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-    }
-
-    .green .result-badge {
-      background: rgba(52, 211, 153, .18);
-      color: var(--success);
-    }
-
-    .yellow .result-badge {
-      background: rgba(251, 191, 36, .18);
-      color: var(--warning);
-    }
-
-    .red .result-badge {
-      background: rgba(248, 113, 113, .18);
-      color: var(--error);
-    }
-
-    .result-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px
     }
 
     .result-amount {
-      font-size: 46px;
-      font-weight: 800;
-      letter-spacing: -1px;
-      margin-bottom: 18px;
-      line-height: 1;
+      font-size: 52px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1
     }
 
-    .result-amount .currency {
+    .result-amount .cur {
       font-size: 22px;
       font-weight: 600;
       vertical-align: super;
-      margin-right: 4px;
+      margin-right: 3px;
+      letter-spacing: 0
     }
 
     .green .result-amount {
-      color: var(--success);
+      color: var(--success)
     }
 
     .yellow .result-amount {
-      color: var(--warning);
+      color: var(--warn)
     }
 
     .red .result-amount {
-      color: var(--error);
+      color: var(--danger)
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 8px
+    }
+
+    .act-btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      color: var(--txt2);
+      font-family: 'Outfit', sans-serif;
+      transition: all var(--trans);
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .act-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent)
     }
 
     .result-divider {
       height: 1px;
       background: var(--border);
-      margin-bottom: 16px;
+      margin: 16px 0
     }
 
-    .result-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 10px;
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px
     }
 
-    .result-row-icon {
-      font-size: 16px;
-      flex-shrink: 0;
-      margin-top: 1px;
+    @media(max-width:500px) {
+      .stats-grid {
+        grid-template-columns: 1fr 1fr
+      }
     }
 
-    .result-row-label {
-      font-size: 11px;
-      color: var(--text-label);
-      font-weight: 600;
+    .stat-box {
+      background: var(--bg3);
+      border-radius: 12px;
+      padding: 14px 16px;
+      border: 1px solid var(--border)
+    }
+
+    .stat-box .s-label {
+      font-size: 10px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .4px;
+      letter-spacing: .6px;
+      color: var(--txt3);
+      margin-bottom: 6px
     }
 
-    .result-row-val {
-      font-size: 13px;
-      color: var(--text-muted);
-      font-weight: 500;
+    .stat-box .s-val {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--txt);
+      line-height: 1
     }
 
-    /* ── Scrollbar ───────────────────────────────────────────── */
-    ::-webkit-scrollbar {
-      width: 6px;
+    .stat-box .s-sub {
+      font-size: 11px;
+      color: var(--txt3);
+      margin-top: 3px
     }
 
-    ::-webkit-scrollbar-track {
-      background: transparent;
+    /* Slab progress bar */
+    .slab-progress-wrap {
+      margin-top: 16px
     }
 
-    ::-webkit-scrollbar-thumb {
-      background: var(--border);
+    .slab-progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--txt2);
+      margin-bottom: 8px
+    }
+
+    .slab-bar {
+      height: 8px;
       border-radius: 99px;
+      background: var(--bg4);
+      overflow: hidden
     }
 
-    /* ── Responsive ──────────────────────────────────────────── */
-    @media (max-width: 640px) {
+    .slab-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width .8s cubic-bezier(.4, 0, .2, 1);
+      background: linear-gradient(90deg, var(--success), var(--warn), var(--danger))
+    }
 
-      html,
-      body {
-        overflow: auto;
+    /* Extra info */
+    .extra-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .extra-row:last-child {
+      border-bottom: none
+    }
+
+    .extra-row .ei {
+      font-size: 18px
+    }
+
+    .extra-row .et {
+      font-size: 13px;
+      color: var(--txt2)
+    }
+
+    .extra-row .ev {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--txt);
+      margin-left: auto
+    }
+
+    /* Tip box */
+    .tip-box {
+      padding: 14px 16px;
+      background: rgba(56, 189, 248, .07);
+      border: 1px solid rgba(56, 189, 248, .2);
+      border-radius: 12px;
+      font-size: 13px;
+      color: var(--txt2);
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: 16px
+    }
+
+    .tip-box .tip-icon {
+      font-size: 20px;
+      flex-shrink: 0
+    }
+
+    /* ── Multi-appliance tab ── */
+    .multi-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px
+    }
+
+    .multi-header h2 {
+      font-size: 16px;
+      font-weight: 800
+    }
+
+    .add-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+      transition: all var(--trans)
+    }
+
+    .add-btn:hover {
+      transform: scale(1.04)
+    }
+
+    .multi-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .multi-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto auto;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--bg3);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      animation: fadeIn .3s
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px)
       }
 
-      .app {
-        height: auto;
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .mi-icon {
+      font-size: 22px
+    }
+
+    .mi-name {
+      font-weight: 700;
+      font-size: 14px
+    }
+
+    .mi-sub {
+      font-size: 11px;
+      color: var(--txt3);
+      margin-top: 2px
+    }
+
+    .mi-cost {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap
+    }
+
+    .mi-del {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      cursor: pointer;
+      font-size: 15px;
+      color: var(--txt3);
+      transition: all var(--trans);
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .mi-del:hover {
+      background: rgba(248, 113, 113, .1);
+      border-color: var(--danger);
+      color: var(--danger)
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, .1), rgba(99, 102, 241, .1));
+      border: 1px solid rgba(56, 189, 248, .2);
+      border-radius: 12px;
+      margin-top: 8px
+    }
+
+    .total-row span {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--txt2)
+    }
+
+    .total-row .total-amt {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent)
+    }
+
+    /* ── Tips tab ── */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px
+    }
+
+    @media(max-width:520px) {
+      .tips-grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .tip-card {
+      padding: 18px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      transition: all var(--trans)
+    }
+
+    .tip-card:hover {
+      border-color: rgba(56, 189, 248, .3);
+      transform: translateY(-2px)
+    }
+
+    .tip-card .tc-icon {
+      font-size: 28px;
+      margin-bottom: 10px
+    }
+
+    .tip-card .tc-title {
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 6px
+    }
+
+    .tip-card .tc-body {
+      font-size: 12px;
+      color: var(--txt2);
+      line-height: 1.5
+    }
+
+    .savings-badge {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--success);
+      background: rgba(52, 211, 153, .1);
+      border: 1px solid rgba(52, 211, 153, .2);
+      padding: 2px 8px;
+      border-radius: 4px
+    }
+
+    /* Toast */
+    .toast-wrap {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .toast {
+      padding: 12px 18px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--txt);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .4);
+      animation: toastIn .3s cubic-bezier(.34, 1.3, .64, 1);
+      backdrop-filter: blur(12px)
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateX(40px)
       }
 
+      to {
+        opacity: 1;
+        transform: translateX(0)
+      }
+    }
+
+    .toast.removing {
+      animation: toastOut .3s forwards
+    }
+
+    @keyframes toastOut {
+      to {
+        opacity: 0;
+        transform: translateX(40px)
+      }
+    }
+
+    /* Mobile */
+    @media(max-width:768px) {
       .body {
         flex-direction: column;
-        overflow: visible;
+        height: auto;
+        overflow: visible
       }
 
-      .sidebar {
+      aside {
         width: 100%;
         flex-direction: row;
         flex-wrap: wrap;
         padding: 10px;
-        overflow: visible;
+        overflow-x: auto;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border)
       }
 
-      .sidebar-heading,
-      .slab-box {
-        display: none;
+      .sb-head,
+      .slab-panel,
+      .search-wrap {
+        display: none
       }
 
       .app-card {
-        flex: 0 0 auto;
+        flex-shrink: 0;
+        padding: 8px 12px
       }
 
-      .main {
-        padding: 20px 16px;
+      main {
+        padding: 20px 16px
+      }
+
+      .appl-info h1 {
+        font-size: 22px
+      }
+
+      .result-amount {
+        font-size: 38px
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr
       }
     }
   </style>
 </head>
 
 <body>
-  <div class="app">
+  <div class="shell">
 
-    <!-- ── Header ─────────────────────────────────────────────── -->
-    <header class="header">
-      <div class="header-left">
-        <div class="header-bolt">⚡</div>
+    <!-- Header -->
+    <header>
+      <div class="hd-left">
+        <div class="bolt">⚡</div>
         <div>
-          <div class="header-title">Electricity Bill Calculator</div>
-          <div class="header-sub">NEPRA Residential Tariff 2025 · Pakistan</div>
+          <div class="hd-title">Electricity Bill Calculator</div>
+          <div class="hd-sub">NEPRA 2025 · Pakistan</div>
         </div>
       </div>
-      <div class="tariff-badge">PKR 4.78 – 48.46 / unit</div>
+      <div class="hd-right">
+        <div class="badge" id="rateBadge">PKR 4.78 – 48.46 / unit</div>
+        <button class="icon-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">🌙</button>
+      </div>
     </header>
 
     <div class="body">
 
-      <!-- ── Sidebar ───────────────────────────────────────────── -->
-      <aside class="sidebar" id="sidebar">
-        <div class="sidebar-heading">Appliances</div>
-
-        <div class="app-card active" data-idx="0" onclick="selectAppliance(0)">
-          <div class="app-card-icon">🧊</div>
-          <div class="app-card-name">Refrigerator</div>
+      <!-- Sidebar -->
+      <aside id="sidebar">
+        <div class="sb-head">Appliances</div>
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search appliance…" autocomplete="off" />
         </div>
-        <div class="app-card" data-idx="1" onclick="selectAppliance(1)">
-          <div class="app-card-icon">💨</div>
-          <div class="app-card-name">Ceiling Fan</div>
-        </div>
-        <div class="app-card" data-idx="2" onclick="selectAppliance(2)">
-          <div class="app-card-icon">💡</div>
-          <div class="app-card-name">Light / Bulb</div>
-        </div>
-        <div class="app-card" data-idx="3" onclick="selectAppliance(3)">
-          <div class="app-card-icon">❄️</div>
-          <div class="app-card-name">Air Conditioner</div>
-        </div>
-        <div class="app-card" data-idx="4" onclick="selectAppliance(4)">
-          <div class="app-card-icon">🌬️</div>
-          <div class="app-card-name">Room Cooler</div>
-        </div>
-        <div class="app-card" data-idx="5" onclick="selectAppliance(5)">
-          <div class="app-card-icon">📺</div>
-          <div class="app-card-name">Television</div>
-        </div>
-        <div class="app-card" data-idx="6" onclick="selectAppliance(6)">
-          <div class="app-card-icon">🧺</div>
-          <div class="app-card-name">Iron</div>
-        </div>
-        <div class="app-card" data-idx="7" onclick="selectAppliance(7)">
-          <div class="app-card-icon">💧</div>
-          <div class="app-card-name">Water Pump</div>
-        </div>
-        <div class="app-card" data-idx="8" onclick="selectAppliance(8)">
-          <div class="app-card-icon">🫧</div>
-          <div class="app-card-name">Washing Machine</div>
-        </div>
-        <div class="app-card" data-idx="9" onclick="selectAppliance(9)">
-          <div class="app-card-icon">🍔</div>
-          <div class="app-card-name">Microwave Oven</div>
-        </div>
-        <div class="app-card" data-idx="10" onclick="selectAppliance(10)">
-          <div class="app-card-icon">🖥️</div>
-          <div class="app-card-name">Desktop PC</div>
-        </div>
-        <div class="app-card" data-idx="11" onclick="selectAppliance(11)">
-          <div class="app-card-icon">☕</div>
-          <div class="app-card-name">Electric Kettle</div>
-        </div>
-        <div class="app-card" data-idx="12" onclick="selectAppliance(12)">
-          <div class="app-card-icon">🚿</div>
-          <div class="app-card-name">Geyser / Water Heater</div>
-        </div>
-        <div class="app-card" data-idx="13" onclick="selectAppliance(13)">
-          <div class="app-card-icon">💻</div>
-          <div class="app-card-name">Laptop</div>
-        </div>
-        <div class="app-card" data-idx="14" onclick="selectAppliance(14)">
-          <div class="app-card-icon">👔</div>
-          <div class="app-card-name">Electric Iron</div>
-        </div>
-
-        <!-- NEPRA 2025 Tariff reference -->
-        <div class="slab-box">
-          <div class="slab-title">NEPRA 2025 Tariff</div>
+        <div id="appList"></div>
+        <div class="slab-panel">
+          <div class="slab-title">NEPRA 2025 Tariff (PKR)</div>
           <div class="slab-row"><span>Lifeline ≤50u</span><span class="rate">4.78</span></div>
           <div class="slab-row"><span>Protected ≤100u</span><span class="rate">8.52</span></div>
           <div class="slab-row"><span>Protected ≤200u</span><span class="rate">11.51</span></div>
           <div class="slab-row"><span>Non-Prot ≤300u</span><span class="rate">34.03</span></div>
           <div class="slab-row"><span>Non-Prot 300+u</span><span class="rate">48.46</span></div>
-          <div class="slab-row"><span>Fixed charge</span><span class="rate">PKR 75</span></div>
+          <div class="slab-row"><span>Fixed charge</span><span class="rate">75/mo</span></div>
         </div>
       </aside>
 
-      <!-- ── Calculator Main ────────────────────────────────────── -->
-      <main class="main">
-        <div class="calc-wrapper">
+      <!-- Main -->
+      <main>
 
-          <!-- Appliance heading -->
-          <div class="appl-heading">
-            <div class="appl-emoji" id="appIcon">🧊</div>
-            <div class="appl-name" id="appName">Refrigerator</div>
+        <!-- Appliance hero -->
+        <div class="appl-hero">
+          <div class="appl-emoji-wrap" id="appEmoji">🧊</div>
+          <div class="appl-info">
+            <h1 id="appName">Refrigerator</h1>
+            <p id="appDesc">Runs 24/7 in most households</p>
+            <span class="typical-watt" id="typicalBtn" title="Click to fill typical wattage">⚡ Typical: <span
+                id="typicalWatt">150W</span> — click to fill</span>
           </div>
+        </div>
 
-          <!-- Inputs -->
-          <div class="input-card">
-            <div class="field-group">
-              <div class="field-label"><span>🕐</span> Daily Usage Hours</div>
-              <input class="field-input" id="hoursInput" type="number" min="1" max="24" step="0.5" placeholder="e.g. 8"
-                inputmode="decimal" />
-              <div class="field-hint">Hours this appliance runs per day &nbsp;(1 – 24 hrs)</div>
+        <!-- Tabs -->
+        <div class="tabs" id="tabBar">
+          <button class="tab active" onclick="switchTab('calc',this)">⚡ Calculator</button>
+          <button class="tab" onclick="switchTab('multi',this)">📊 Multi-Appliance</button>
+          <button class="tab" onclick="switchTab('tips',this)">💡 Energy Tips</button>
+        </div>
+
+        <!-- ── CALCULATOR TAB ── -->
+        <div id="tab-calc">
+
+          <div class="glass">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+              <span style="font-size:14px;font-weight:700">📋 Enter Usage Details</span>
+              <span class="live-dot">Live calculation</span>
             </div>
-            <div class="field-group">
-              <div class="field-label"><span>⚡</span> Power Wattage (W)</div>
-              <input class="field-input" id="wattInput" type="number" min="1" max="50000" step="1"
-                placeholder="e.g. 1500" inputmode="decimal" />
-              <div class="field-hint">Rated wattage printed on the appliance label &nbsp;(1 – 50,000 W)</div>
+
+            <div class="input-grid">
+              <div class="field">
+                <label>🕐 Daily Usage Hours</label>
+                <div class="input-wrap">
+                  <input type="number" id="hoursInput" min="0.5" max="24" step="0.5" placeholder="e.g. 8" />
+                  <span class="input-unit">hrs</span>
+                </div>
+                <div class="slider-row">
+                  <input type="range" id="hoursSlider" min="0.5" max="24" step="0.5" value="8" />
+                  <span class="slider-val" id="hoursSliderVal">8</span>
+                </div>
+                <div class="field-hint">Hours per day (0.5 – 24)</div>
+              </div>
+              <div class="field">
+                <label>⚡ Wattage</label>
+                <div class="input-wrap">
+                  <input type="number" id="wattInput" min="1" max="50000" step="1" placeholder="e.g. 150" />
+                  <span class="input-unit">W</span>
+                </div>
+                <div class="slider-row">
+                  <input type="range" id="wattSlider" min="1" max="5000" step="1" value="150" />
+                  <span class="slider-val" id="wattSliderVal">150</span>
+                </div>
+                <div class="field-hint">Rated power (check appliance label)</div>
+              </div>
             </div>
           </div>
 
-          <!-- Error banner -->
-          <div class="error-msg" id="errorMsg">
-            <span>⚠️</span><span id="errorText"></span>
-          </div>
+          <div class="err" id="errMsg">⚠️ <span id="errTxt"></span></div>
 
-          <!-- Button -->
-          <button class="calc-btn" onclick="calculate()">⚡ &nbsp; Calculate Monthly Bill</button>
+          <button class="calc-btn" id="calcBtn" onclick="calculate()">
+            ⚡ &nbsp; Calculate Monthly Bill
+          </button>
 
           <!-- Result -->
           <div class="result-card" id="resultCard">
-            <div class="result-header">
-              <span class="result-badge" id="resultBadge">Low</span>
-              <span class="result-title">Monthly Bill Estimate</span>
+            <div class="result-top">
+              <div>
+                <div
+                  style="font-size:12px;font-weight:700;color:var(--txt2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.6px">
+                  Monthly Bill Estimate</div>
+                <div class="result-amount"><span class="cur">PKR</span><span id="resBill">0</span></div>
+              </div>
+              <div class="result-actions">
+                <button class="act-btn" onclick="copyResult()" id="copyBtn">📋 Copy</button>
+                <button class="act-btn" onclick="addToMulti()">➕ Add to Total</button>
+              </div>
             </div>
-            <div class="result-amount">
-              <span class="currency">PKR</span><span id="resultBill">0</span>
+
+            <div class="stats-grid">
+              <div class="stat-box">
+                <div class="s-label">Units/Month</div>
+                <div class="s-val" id="resKwh">—</div>
+                <div class="s-sub">kWh consumed</div>
+              </div>
+              <div class="stat-box">
+                <div class="s-label">Daily Cost</div>
+                <div class="s-val" id="resDaily">—</div>
+                <div class="s-sub">PKR/day</div>
+              </div>
+              <div class="stat-box">
+                <div class="s-label">Yearly Cost</div>
+                <div class="s-val" id="resYearly">—</div>
+                <div class="s-sub">PKR/year</div>
+              </div>
             </div>
+
+            <div class="slab-progress-wrap">
+              <div class="slab-progress-label">
+                <span id="resSlabLabel">Tariff Slab</span>
+                <span id="resRate">—</span>
+              </div>
+              <div class="slab-bar">
+                <div class="slab-fill" id="slabFill" style="width:10%"></div>
+              </div>
+            </div>
+
             <div class="result-divider"></div>
-            <div class="result-row">
-              <span class="result-row-icon">📊</span>
-              <div>
-                <div class="result-row-label">Units Consumed</div>
-                <div class="result-row-val" id="resultKwh">—</div>
-              </div>
-            </div>
-            <div class="result-row">
-              <span class="result-row-icon">📋</span>
-              <div>
-                <div class="result-row-label">Tariff Slab</div>
-                <div class="result-row-val" id="resultSlab">—</div>
-              </div>
-            </div>
-            <div class="result-row">
-              <span class="result-row-icon">💡</span>
-              <div>
-                <div class="result-row-label">Extra Info</div>
-                <div class="result-row-val" id="resultExtra">—</div>
-              </div>
+
+            <div id="extraRows"></div>
+            <div class="tip-box" id="tipBox" style="display:none">
+              <span class="tip-icon">💡</span>
+              <span id="tipText"></span>
             </div>
           </div>
 
         </div>
+
+        <!-- ── MULTI-APPLIANCE TAB ── -->
+        <div id="tab-multi" style="display:none">
+          <div class="glass">
+            <div class="multi-header">
+              <h2>🏠 Household Bill Estimator</h2>
+              <button class="add-btn" onclick="addCurrentToMulti()">+ Add Current</button>
+            </div>
+            <p style="font-size:13px;color:var(--txt2);margin-bottom:16px">Select an appliance, enter details,
+              calculate, then click "Add to Total" or use the button above.</p>
+            <div class="multi-list" id="multiList">
+              <div style="text-align:center;padding:32px;color:var(--txt3);font-size:14px">No appliances added
+                yet.<br>Go to Calculator tab and click "Add to Total"</div>
+            </div>
+            <div class="total-row" id="totalRow" style="display:none">
+              <span>💰 Estimated Total Monthly Bill</span>
+              <span class="total-amt" id="totalAmt">PKR 0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TIPS TAB ── -->
+        <div id="tab-tips" style="display:none">
+          <div class="glass">
+            <h2 style="font-size:16px;font-weight:800;margin-bottom:16px">💡 Energy Saving Tips</h2>
+            <div class="tips-grid">
+              <div class="tip-card">
+                <div class="tc-icon">❄️</div>
+                <div class="tc-title">AC at 26°C</div>
+                <div class="tc-body">Setting your AC to 26°C instead of 20°C can reduce consumption by up to 40%. Each
+                  degree lower increases usage by ~8%.</div>
+                <div class="savings-badge">Save up to PKR 3,000/mo</div>
+              </div>
+              <div class="tip-card">
+                <div class="tc-icon">💡</div>
+                <div class="tc-title">Switch to LED</div>
+                <div class="tc-body">Replace traditional bulbs with LED lights. LEDs use 80% less energy and last 25x
+                  longer.</div>
+                <div class="savings-badge">Save up to PKR 500/mo</div>
+              </div>
+              <div class="tip-card">
+                <div class="tc-icon">🧊</div>
+                <div class="tc-title">Fridge Placement</div>
+                <div class="tc-body">Keep your fridge away from heat sources and walls. A well-ventilated fridge uses
+                  15% less electricity.</div>
+                <div class="savings-badge">Save up to PKR 400/mo</div>
+              </div>
+              <div class="tip-card">
+                <div class="tc-icon">🌞</div>
+                <div class="tc-title">Load Shifting</div>
+                <div class="tc-body">Use heavy appliances (washer, iron, geyser) during DISCO off-peak hours to qualify
+                  for lower TOU rates.</div>
+                <div class="savings-badge">Save up to PKR 1,500/mo</div>
+              </div>
+              <div class="tip-card">
+                <div class="tc-icon">🔌</div>
+                <div class="tc-title">Standby Power</div>
+                <div class="tc-body">Electronics in standby mode consume 5-10% of your bill. Unplug or use smart power
+                  strips.</div>
+                <div class="savings-badge">Save up to PKR 300/mo</div>
+              </div>
+              <div class="tip-card">
+                <div class="tc-icon">☀️</div>
+                <div class="tc-title">Go Solar</div>
+                <div class="tc-body">A 5kW solar system in Pakistan can offset 600–700 units/month. Payback period is
+                  under 4 years at current rates.</div>
+                <div class="savings-badge">Save PKR 20,000+/mo</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </main>
     </div>
   </div>
 
+  <!-- Toast container -->
+  <div class="toast-wrap" id="toastWrap"></div>
+
   <script>
-    // ── Appliance Data ─────────────────────────────────────────────────────────
+    // ── Appliance Data ──────────────────────────────────────────────────────────
     const appliances = [
-      {
-        name: 'Refrigerator', icon: '🧊',
-        extra: (bill, kwh, h) =>
-          `Daily cost: PKR ${fmt(bill / 30)}  ·  Annual estimate: PKR ${fmt(bill * 12)}`
-      },
-      {
-        name: 'Ceiling Fan', icon: '💨',
-        extra: (bill, kwh, h) =>
-          `Daily cost: PKR ${fmt(bill / 30)}`
-      },
-      {
-        name: 'Light / Bulb', icon: '💡',
-        extra: (bill, kwh, h) =>
-          `Daily cost: PKR ${fmt(bill / 30)}  ·  Annual estimate: PKR ${fmt(bill * 12)}`
-      },
-      {
-        name: 'Air Conditioner', icon: '❄️',
-        extra: (bill, kwh, h) =>
-          `Daily: PKR ${fmt(bill / 30)}  ·  6-month summer cost: PKR ${fmt(bill * 6)}`
-      },
-      {
-        name: 'Room Cooler', icon: '🌬️',
-        extra: (bill, kwh, h) =>
-          `Daily: PKR ${fmt(bill / 30)}  ·  4-month seasonal cost: PKR ${fmt(bill * 4)}`
-      },
-      {
-        name: 'Television', icon: '📺',
-        extra: (bill, kwh, h) =>
-          `Usage: ${h} hrs/day  ·  Daily cost: PKR ${fmt(bill / 30)}`
-      },
-      {
-        name: 'Iron', icon: '🧺',
-        extra: (bill, kwh, h) =>
-          `Cost per session (~1 hr): PKR ${fmt(bill / (30 * h))}`
-      },
-      {
-        name: 'Water Pump', icon: '💧',
-        extra: (bill, kwh, h) =>
-          `Daily cost: PKR ${fmt(bill / 30)}  ·  Yearly estimate: PKR ${fmt(bill * 12)}`
-      },
-      {
-        name: 'Washing Machine', icon: '🫧',
-        extra: (bill, kwh, h) =>
-          `Daily cost: PKR ${fmt(bill / 30)}  ·  Per cycle (~1hr): PKR ${fmt(bill / 30)}`
-      },
-      {
-        name: 'Microwave Oven', icon: '🍔',
-        extra: (bill, kwh, h) =>
-          `Daily cost: PKR ${fmt(bill / 30)}  ·  Per minute: PKR ${fmt(bill / 30 / (h * 60))}`
-      },
-      {
-        name: 'Desktop PC', icon: '🖥️',
-        extra: (bill, kwh, h) =>
-          `Daily cost: PKR ${fmt(bill / 30)}  ·  Yearly: PKR ${fmt(bill * 12)}  ·  Tip: Use a laptop to save ~70%`
-      },
-      {
-        name: 'Electric Kettle', icon: '☕',
-        extra: (bill, kwh, h) =>
-          `Daily cost: PKR ${fmt(bill / 30)}  ·  Per boil (~10 min): PKR ${fmt(bill / 30 / (h * 6))}`
-      },
-      {
-        name: 'Geyser / Water Heater', icon: '🚿',
-        extra: (bill, kwh, h) =>
-          `Daily cost: PKR ${fmt(bill / 30)}  ·  Winter season (4mo): PKR ${fmt(bill * 4)}`
-      },
-      {
-        name: 'Laptop', icon: '💻',
-        extra: (bill, kwh, h) =>
-          `Daily cost: PKR ${fmt(bill / 30)}  ·  Yearly: PKR ${fmt(bill * 12)}  ·  Very energy efficient!`
-      },
-      {
-        name: 'Electric Iron', icon: '👔',
-        extra: (bill, kwh, h) =>
-          `Daily cost: PKR ${fmt(bill / 30)}  ·  Per session (~30 min): PKR ${fmt(bill / 30 / (h * 2))}`
-      }
+      { name: 'Refrigerator', icon: '🧊', desc: 'Runs 24/7 in most households', typical: 150, tip: 'Set fridge temperature to 3–5°C for optimal efficiency.' },
+      { name: 'Ceiling Fan', icon: '💨', desc: 'Most used cooling appliance', typical: 75, tip: 'Reverse fan direction in winter to push warm air down.' },
+      { name: 'Light / Bulb', icon: '💡', desc: 'Lighting for rooms & corridors', typical: 15, tip: 'Switch to LED bulbs to cut lighting costs by 80%.' },
+      { name: 'Air Conditioner', icon: '❄️', desc: 'Highest energy consumer in summer', typical: 1500, tip: 'Set AC to 26°C and use fan to distribute cool air.' },
+      { name: 'Room Cooler', icon: '🌬️', desc: 'Seasonal cooling alternative to AC', typical: 200, tip: 'Keep water cooler topped up and clean pads monthly.' },
+      { name: 'Television', icon: '📺', desc: 'Entertainment hub of the household', typical: 120, tip: 'Enable eco mode; modern OLED TVs save 30% vs LCD.' },
+      { name: 'Iron', icon: '🧺', desc: 'Clothes ironing appliance', typical: 1200, tip: 'Iron clothes in batches to reduce per-session cost.' },
+      { name: 'Water Pump', icon: '💧', desc: 'Pumps water to rooftop tanks', typical: 750, tip: 'Install a timer to run the pump only when needed.' },
+      { name: 'Washing Machine', icon: '🫧', desc: 'Laundry appliance', typical: 500, tip: 'Wash with cold water and full loads to save energy.' },
+      { name: 'Microwave Oven', icon: '🍔', desc: 'Rapid cooking appliance', typical: 1000, tip: 'Microwave uses 80% less energy than a conventional oven.' },
+      { name: 'Desktop PC', icon: '🖥️', desc: 'High-performance computing', typical: 300, tip: 'Switch to a laptop — it uses 80% less power than desktop.' },
+      { name: 'Electric Kettle', icon: '☕', desc: 'Boiling water for tea & cooking', typical: 1500, tip: 'Boil only the water you need to save energy.' },
+      { name: 'Geyser / Water Heater', icon: '🚿', desc: 'Hot water heating appliance', typical: 2000, tip: 'Use a timer to heat water only before use times.' },
+      { name: 'Laptop', icon: '💻', desc: 'Portable computing — very efficient', typical: 65, tip: 'Enable battery saver mode when on AC power too.' },
+      { name: 'Electric Iron', icon: '👔', desc: 'Precision garment ironing', typical: 1200, tip: 'Iron clothes from lowest to highest heat settings.' },
     ];
 
-    // ── NEPRA 2025 Tariff ──────────────────────────────────────────────────────
-    const FIXED_CHARGE = 75; // PKR/month single-phase connection
-
+    // ── NEPRA 2025 Tariff ───────────────────────────────────────────────────────
+    const FIXED = 75;
     function unitPrice(kwh) {
-      if (kwh <= 50) return 4.78;   // Lifeline
-      if (kwh <= 100) return 8.52;   // Protected ≤100
-      if (kwh <= 200) return 11.51;  // Protected 101-200
-      if (kwh <= 300) return 34.03;  // Non-Protected ≤300
-      return 48.46;                  // Non-Protected TOU 300+
+      if (kwh <= 50) return 4.78;
+      if (kwh <= 100) return 8.52;
+      if (kwh <= 200) return 11.51;
+      if (kwh <= 300) return 34.03;
+      return 48.46;
+    }
+    function slabInfo(kwh) {
+      if (kwh <= 50) return { label: 'Lifeline (≤50 units)', rate: 4.78, pct: 10 };
+      if (kwh <= 100) return { label: 'Protected (≤100 units)', rate: 8.52, pct: 25 };
+      if (kwh <= 200) return { label: 'Protected (≤200 units)', rate: 11.51, pct: 45 };
+      if (kwh <= 300) return { label: 'Non-Protected (≤300u)', rate: 34.03, pct: 70 };
+      return { label: 'Non-Protected TOU 300+', rate: 48.46, pct: 100 };
     }
 
-    function slabLabel(kwh) {
-      if (kwh <= 50) return 'Lifeline (≤ 50 units)  —  PKR 4.78 / unit';
-      if (kwh <= 100) return 'Protected Slab 1 (≤ 100 units)  —  PKR 8.52 / unit';
-      if (kwh <= 200) return 'Protected Slab 2 (101 – 200 units)  —  PKR 11.51 / unit';
-      if (kwh <= 300) return 'Non-Protected (201 – 300 units)  —  PKR 34.03 / unit';
-      return 'Non-Protected TOU (300+ units)  —  PKR 48.46 / unit';
-    }
-
-    // ── Helpers ────────────────────────────────────────────────────────────────
+    // ── Helpers ─────────────────────────────────────────────────────────────────
     const fmt = n => n.toLocaleString('en-PK', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const fmtK = n => n >= 1000 ? (n / 1000).toFixed(1) + 'K' : n.toFixed(0);
+    const $ = id => document.getElementById(id);
 
+    // ── State ───────────────────────────────────────────────────────────────────
     let selectedIdx = 0;
+    let lastResult = null;
+    let multiItems = [];
+    let debounceT = null;
 
-    // ── Select Appliance ───────────────────────────────────────────────────────
-    function selectAppliance(idx) {
-      document.querySelectorAll('.app-card').forEach(c => c.classList.remove('active'));
-      document.querySelector(`[data-idx="${idx}"]`).classList.add('active');
-      selectedIdx = idx;
-
-      const a = appliances[idx];
-      const iconEl = document.getElementById('appIcon');
-      const nameEl = document.getElementById('appName');
-
-      iconEl.classList.add('pop');
-      setTimeout(() => iconEl.classList.remove('pop'), 300);
-
-      iconEl.textContent = a.icon;
-      nameEl.textContent = a.name;
-
-      // Reset
-      document.getElementById('hoursInput').value = '';
-      document.getElementById('wattInput').value = '';
-      hideError();
-      document.getElementById('resultCard').classList.remove('show');
+    // ── Build Sidebar ────────────────────────────────────────────────────────────
+    function buildSidebar(filter = '') {
+      const list = $('appList');
+      list.innerHTML = '';
+      appliances.forEach((a, i) => {
+        if (filter && !a.name.toLowerCase().includes(filter.toLowerCase())) return;
+        const el = document.createElement('div');
+        el.className = 'app-card' + (i === selectedIdx ? ' active' : '');
+        el.dataset.idx = i;
+        el.innerHTML = `<div class="card-icon">${a.icon}</div><div class="card-txt"><div class="card-name">${a.name}</div><div class="card-watt">${a.typical}W typical</div></div>`;
+        el.onclick = () => selectAppliance(i);
+        list.appendChild(el);
+      });
     }
 
-    // ── Calculate ──────────────────────────────────────────────────────────────
-    function calculate() {
-      const hoursRaw = document.getElementById('hoursInput').value.trim();
-      const wattRaw = document.getElementById('wattInput').value.trim();
+    // ── Select Appliance ─────────────────────────────────────────────────────────
+    function selectAppliance(i) {
+      selectedIdx = i;
+      const a = appliances[i];
+      buildSidebar($('searchInput').value);
+      $('appEmoji').textContent = a.icon;
+      $('appEmoji').classList.add('pop');
+      setTimeout(() => $('appEmoji').classList.remove('pop'), 350);
+      $('appName').textContent = a.name;
+      $('appDesc').textContent = a.desc;
+      $('typicalWatt').textContent = a.typical + 'W';
+      $('hoursInput').value = '';
+      $('wattInput').value = '';
+      hideErr();
+      $('resultCard').classList.remove('show');
+      lastResult = null;
+      updateSliders();
+    }
 
-      const hours = parseFloat(hoursRaw);
-      const watts = parseFloat(wattRaw);
+    // ── Typical wattage fill ─────────────────────────────────────────────────────
+    $('typicalBtn').onclick = () => {
+      $('wattInput').value = appliances[selectedIdx].typical;
+      $('wattSlider').value = Math.min(appliances[selectedIdx].typical, 5000);
+      $('wattSliderVal').textContent = appliances[selectedIdx].typical;
+      updateSliderPct($('wattSlider'));
+      toast('⚡ Typical wattage filled!', 'success');
+      debouncedCalc();
+    };
 
-      if (!hoursRaw || isNaN(hours)) { showError('Please enter a valid number for daily usage hours.'); return; }
-      if (hours < 1 || hours > 24) { showError('Hours must be between 1 and 24.'); return; }
-      if (!wattRaw || isNaN(watts)) { showError('Please enter a valid wattage value.'); return; }
-      if (watts <= 0 || watts > 50000) { showError('Wattage must be between 1 and 50,000 watts.'); return; }
+    // ── Sliders ──────────────────────────────────────────────────────────────────
+    function updateSliderPct(slider) {
+      const min = +slider.min, max = +slider.max, val = +slider.value;
+      const pct = ((val - min) / (max - min)) * 100;
+      slider.style.setProperty('--pct', pct + '%');
+    }
+    function updateSliders() {
+      const h = $('hoursInput').value || '8';
+      const w = $('wattInput').value || '150';
+      $('hoursSlider').value = Math.min(+h, 24);
+      $('hoursSliderVal').textContent = h;
+      $('wattSlider').value = Math.min(+w, 5000);
+      $('wattSliderVal').textContent = w;
+      updateSliderPct($('hoursSlider'));
+      updateSliderPct($('wattSlider'));
+    }
 
-      hideError();
+    // Sync slider ↔ input
+    [['hoursSlider', 'hoursInput', 'hoursSliderVal'],
+    ['wattSlider', 'wattInput', 'wattSliderVal']].forEach(([sid, iid, vid]) => {
+      const s = $(sid), inp = $(iid), val = $(vid);
+      s.oninput = () => {
+        inp.value = s.value; val.textContent = s.value;
+        updateSliderPct(s); debouncedCalc();
+      };
+      inp.oninput = () => {
+        s.value = Math.min(+inp.value || 0, +s.max);
+        val.textContent = inp.value; updateSliderPct(s); debouncedCalc();
+      };
+      updateSliderPct(s);
+    });
 
-      // Core formula: (W × h/day × 30 days) / 1000  +  fixed charge
-      const kwh = (watts * hours * 30) / 1000;
+    // ── Live calc debounce ───────────────────────────────────────────────────────
+    function debouncedCalc() {
+      clearTimeout(debounceT);
+      debounceT = setTimeout(() => {
+        if ($('hoursInput').value && $('wattInput').value) calculate(true);
+      }, 400);
+    }
+
+    // ── Calculate ────────────────────────────────────────────────────────────────
+    function calculate(silent = false) {
+      const h = parseFloat($('hoursInput').value);
+      const w = parseFloat($('wattInput').value);
+
+      if (!$('hoursInput').value || isNaN(h)) { showErr('Enter valid daily usage hours.'); return; }
+      if (h < 0.5 || h > 24) { showErr('Hours must be between 0.5 and 24.'); return; }
+      if (!$('wattInput').value || isNaN(w)) { showErr('Enter valid wattage.'); return; }
+      if (w <= 0 || w > 50000) { showErr('Wattage must be between 1 and 50,000 W.'); return; }
+
+      hideErr();
+      const kwh = (w * h * 30) / 1000;
       const rate = unitPrice(kwh);
-      const bill = kwh * rate + FIXED_CHARGE;
-
+      const bill = kwh * rate + FIXED;
+      const slab = slabInfo(kwh);
       const a = appliances[selectedIdx];
 
-      // Determine colour tier
-      const tier = bill < 3000 ? 'green' : bill < 8000 ? 'yellow' : 'red';
-      const badge = bill < 3000 ? '✅ Low' : bill < 8000 ? '⚠️ Moderate' : '🔴 High';
+      lastResult = { name: a.name, icon: a.icon, hours: h, watts: w, kwh, bill, slab };
 
-      const card = document.getElementById('resultCard');
+      // Animate number
+      animateNum('resBill', bill, v => fmt(v));
+      animateNum('resKwh', kwh, v => v.toFixed(2));
+      animateNum('resDaily', bill / 30, v => fmt(v));
+      animateNum('resYearly', bill * 12, v => 'PKR ' + fmtK(v));
+
+      // Slab bar
+      $('resSlabLabel').textContent = slab.label;
+      $('resRate').textContent = 'PKR ' + slab.rate + '/unit';
+      $('slabFill').style.width = slab.pct + '%';
+
+      // Extra info rows
+      const extras = getExtras(a, bill, kwh, h);
+      $('extraRows').innerHTML = extras.map(e => `<div class="extra-row"><span class="ei">${e.icon}</span><span class="et">${e.label}</span><span class="ev">${e.val}</span></div>`).join('');
+
+      // Tip
+      if (a.tip) { $('tipBox').style.display = 'flex'; $('tipText').textContent = a.tip; }
+
+      // Color tier
+      const tier = bill < 3000 ? 'green' : bill < 8000 ? 'yellow' : 'red';
+      const card = $('resultCard');
       card.className = `result-card ${tier} show`;
 
-      document.getElementById('resultBill').textContent = fmt(bill);
-      document.getElementById('resultBadge').textContent = badge;
-      document.getElementById('resultKwh').textContent = `${kwh.toFixed(2)} kWh / month`;
-      document.getElementById('resultSlab').textContent = slabLabel(kwh);
-      document.getElementById('resultExtra').textContent = a.extra(bill, kwh, hours);
+      if (!silent) toast('✅ Bill calculated!', 'success');
     }
 
-    // ── Error helpers ──────────────────────────────────────────────────────────
-    function showError(msg) {
-      document.getElementById('errorText').textContent = msg;
-      document.getElementById('errorMsg').classList.add('show');
-      document.getElementById('resultCard').classList.remove('show');
-    }
-    function hideError() {
-      document.getElementById('errorMsg').classList.remove('show');
+    function getExtras(a, bill, kwh, h) {
+      return [
+        { icon: '💰', label: 'Daily Cost', val: 'PKR ' + fmt(bill / 30) },
+        { icon: '📅', label: 'Weekly Cost', val: 'PKR ' + fmt(bill / 4.3) },
+        { icon: '📆', label: 'Yearly Estimate', val: 'PKR ' + fmt(bill * 12) },
+        { icon: '⚡', label: 'Per kWh Rate Applied', val: 'PKR ' + unitPrice(kwh) + '/unit' },
+        { icon: '🔧', label: 'Fixed Charge (included)', val: 'PKR 75/month' },
+      ];
     }
 
-    // Enter key support
-    ['hoursInput', 'wattInput'].forEach(id => {
-      document.getElementById(id).addEventListener('keydown', e => {
-        if (e.key === 'Enter') calculate();
-      });
+    // ── Animate number ───────────────────────────────────────────────────────────
+    function animateNum(id, target, formatter) {
+      const el = $(id);
+      const start = parseFloat(el.textContent.replace(/,/g, '')) || 0;
+      const dur = 600, startT = performance.now();
+      function step(now) {
+        const p = Math.min((now - startT) / dur, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = formatter(start + (target - start) * ease);
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    // ── Copy result ───────────────────────────────────────────────────────────────
+    function copyResult() {
+      if (!lastResult) { toast('Calculate first!', 'warn'); return; }
+      const r = lastResult;
+      const txt = `⚡ ${r.name} Bill Estimate\nMonthly: PKR ${fmt(r.bill)}\nUnits: ${r.kwh.toFixed(2)} kWh\nTariff: ${r.slab.label}\nNEPRA 2025 rates`;
+      navigator.clipboard.writeText(txt).then(() => toast('📋 Copied to clipboard!', 'success'));
+    }
+
+    // ── Multi-appliance ───────────────────────────────────────────────────────────
+    function addToMulti() {
+      if (!lastResult) { toast('Calculate first!', 'warn'); return; }
+      addItemToMulti(lastResult);
+    }
+    function addCurrentToMulti() {
+      if (!lastResult) { toast('Go to Calculator tab, enter values, then calculate first.', 'warn'); return; }
+      addItemToMulti(lastResult);
+      switchTab('multi', document.querySelectorAll('.tab')[1]);
+    }
+    function addItemToMulti(r) {
+      multiItems.push({ ...r, id: Date.now() });
+      renderMulti();
+      toast('➕ Added to household total!', 'success');
+    }
+    function removeMultiItem(id) {
+      multiItems = multiItems.filter(x => x.id !== id);
+      renderMulti();
+    }
+    function renderMulti() {
+      const list = $('multiList');
+      if (!multiItems.length) {
+        list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--txt3);font-size:14px">No appliances added yet.<br>Go to Calculator tab and click "Add to Total"</div>';
+        $('totalRow').style.display = 'none'; return;
+      }
+      list.innerHTML = multiItems.map(it => `
+    <div class="multi-item">
+      <span class="mi-icon">${it.icon}</span>
+      <div><div class="mi-name">${it.name}</div><div class="mi-sub">${it.watts}W · ${it.hours}h/day · ${it.kwh.toFixed(1)} kWh</div></div>
+      <span class="mi-cost">PKR ${fmt(it.bill)}</span>
+      <button class="mi-del" onclick="removeMultiItem(${it.id})" title="Remove">✕</button>
+    </div>`).join('');
+      const total = multiItems.reduce((s, x) => s + x.bill, 0);
+      $('totalAmt').textContent = 'PKR ' + fmt(total);
+      $('totalRow').style.display = 'flex';
+    }
+
+    // ── Tabs ──────────────────────────────────────────────────────────────────────
+    function switchTab(name, btn) {
+      ['calc', 'multi', 'tips'].forEach(t => $('tab-' + t).style.display = 'none');
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      $('tab-' + name).style.display = 'block';
+      btn.classList.add('active');
+    }
+
+    // ── Search ────────────────────────────────────────────────────────────────────
+    $('searchInput').oninput = e => buildSidebar(e.target.value);
+
+    // ── Theme toggle ──────────────────────────────────────────────────────────────
+    $('themeBtn').onclick = () => {
+      const html = document.documentElement;
+      const isDark = html.dataset.theme === 'dark';
+      html.dataset.theme = isDark ? 'light' : 'dark';
+      $('themeBtn').textContent = isDark ? '🌙' : '☀️';
+      toast(isDark ? '☀️ Light mode' : '🌙 Dark mode', 'info');
+    };
+
+    // ── Error helpers ─────────────────────────────────────────────────────────────
+    function showErr(msg) { $('errTxt').textContent = msg; $('errMsg').classList.add('show'); $('resultCard').classList.remove('show'); }
+    function hideErr() { $('errMsg').classList.remove('show'); }
+
+    // ── Toast ─────────────────────────────────────────────────────────────────────
+    function toast(msg, type = 'info') {
+      const el = document.createElement('div');
+      el.className = 'toast';
+      const colors = { success: '#34d399', warn: '#fbbf24', info: '#38bdf8' };
+      el.style.borderColor = (colors[type] || colors.info) + '44';
+      el.textContent = msg;
+      $('toastWrap').appendChild(el);
+      setTimeout(() => {
+        el.classList.add('removing');
+        setTimeout(() => el.remove(), 300);
+      }, 3000);
+    }
+
+    // ── Keyboard shortcuts ────────────────────────────────────────────────────────
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && (e.target.id === 'hoursInput' || e.target.id === 'wattInput')) calculate();
+      if (e.key === 'Escape') hideErr();
     });
+
+    // ── Init ──────────────────────────────────────────────────────────────────────
+    buildSidebar();
+    selectAppliance(0);
   </script>
 </body>
 
