@@ -1,36 +1,46 @@
 /**
- * ElectricityCalculator — NEPRA Residential Tariff (2024-2025)
+ * ElectricityCalculator — NEPRA Residential Tariff (2025)
  * Source: National Electric Power Regulatory Authority, Pakistan
+ * Updated: February 2025
+ *
+ * Tariff Categories:
+ *  - Lifeline: ≤50 units @ PKR 4.78/unit
+ *  - Protected (≤200 units):
+ *      ≤100 units  → PKR 8.52/unit
+ *      101–200     → PKR 11.51/unit
+ *  - Non-Protected (>200 units):
+ *      ≤300 units  → PKR 34.03/unit
+ *      >300 units  → PKR 48.46/unit (TOU rate)
+ *  Fixed charge: PKR 75/month (single-phase)
  */
 public class ElectricityCalculator {
 
-    // NEPRA 2024-2025 residential slab rates (PKR per unit / kWh)
+    // Fixed monthly customer charge (single-phase connection)
+    public static final double FIXED_CHARGE = 75.0;
+
+    /**
+     * Returns per-unit rate based on NEPRA 2025 residential slabs.
+     */
     public static double calculateUnitPrice(double kwh) {
-        if (kwh <= 100)  return 27.68;
-        else if (kwh <= 200) return 32.47;
-        else if (kwh <= 300) return 38.79;
-        else if (kwh <= 400) return 45.00;
-        else if (kwh <= 500) return 54.00;
-        else if (kwh <= 600) return 59.00;
-        else if (kwh <= 700) return 66.00;
-        else                 return 71.00;
+        if (kwh <= 50)  return 4.78;    // Lifeline consumers
+        else if (kwh <= 100)  return 8.52;   // Protected ≤100 units
+        else if (kwh <= 200)  return 11.51;  // Protected 101–200 units
+        else if (kwh <= 300)  return 34.03;  // Non-Protected 201–300 units
+        else                  return 48.46;  // Non-Protected 300+ units (TOU)
     }
 
     public static String getSlabLabel(double kwh) {
-        if (kwh <= 100)  return "Slab 1 (≤100 units) — PKR 27.68/unit";
-        else if (kwh <= 200) return "Slab 2 (101–200 units) — PKR 32.47/unit";
-        else if (kwh <= 300) return "Slab 3 (201–300 units) — PKR 38.79/unit";
-        else if (kwh <= 400) return "Slab 4 (301–400 units) — PKR 45.00/unit";
-        else if (kwh <= 500) return "Slab 5 (401–500 units) — PKR 54.00/unit";
-        else if (kwh <= 600) return "Slab 6 (501–600 units) — PKR 59.00/unit";
-        else if (kwh <= 700) return "Slab 7 (601–700 units) — PKR 66.00/unit";
-        else                 return "Slab 8 (700+ units) — PKR 71.00/unit";
+        if (kwh <= 50)        return "Lifeline (≤50 units) — PKR 4.78/unit";
+        else if (kwh <= 100)  return "Protected Slab 1 (≤100 units) — PKR 8.52/unit";
+        else if (kwh <= 200)  return "Protected Slab 2 (101–200 units) — PKR 11.51/unit";
+        else if (kwh <= 300)  return "Non-Protected (201–300 units) — PKR 34.03/unit";
+        else                  return "Non-Protected TOU (300+ units) — PKR 48.46/unit";
     }
 
     public static double calculateBill(Appliance appliance) {
-        double kwh = appliance.calculateKWH();
+        double kwh       = appliance.calculateKWH();
         double unitPrice = calculateUnitPrice(kwh);
-        return kwh * unitPrice;
+        return kwh * unitPrice + FIXED_CHARGE;
     }
 
     // Validate inputs and return full result data

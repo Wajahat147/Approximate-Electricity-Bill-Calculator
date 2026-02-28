@@ -37,7 +37,15 @@ public class MainWindow extends JFrame {
         new AirConditioner(),
         new RoomCooler(),
         new Television(),
-        new Iron()
+        new Iron(),
+        new WaterPump(),
+        new WashingMachine(),
+        new Microwave(),
+        new Computer(),
+        new ElectricKettle(),
+        new Geyser(),
+        new Laptop(),
+        new ElectricIron()
     };
 
     private int selectedIndex = 0;
@@ -58,10 +66,10 @@ public class MainWindow extends JFrame {
     private GlowButton calcButton;
 
     public MainWindow() {
-        setTitle("Electricity Bill Calculator — NEPRA 2024-25");
+        setTitle("Electricity Bill Calculator — NEPRA 2025");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(920, 620));
-        setSize(1050, 680);
+        setMinimumSize(new Dimension(980, 700));
+        setSize(1120, 760);
         setLocationRelativeTo(null);
         getContentPane().setBackground(BG_DARK);
 
@@ -80,7 +88,13 @@ public class MainWindow extends JFrame {
         // Body
         JPanel body = new JPanel(new BorderLayout(0, 0));
         body.setBackground(BG_DARK);
-        body.add(buildSidebar(), BorderLayout.WEST);
+        JScrollPane sidebarScroll = new JScrollPane(buildSidebar());
+        sidebarScroll.setBorder(null);
+        sidebarScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        sidebarScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        sidebarScroll.getVerticalScrollBar().setUnitIncrement(16);
+        sidebarScroll.getViewport().setBackground(BG_PANEL);
+        body.add(sidebarScroll, BorderLayout.WEST);
         body.add(buildCalculatorPanel(), BorderLayout.CENTER);
         add(body, BorderLayout.CENTER);
     }
@@ -108,7 +122,7 @@ public class MainWindow extends JFrame {
         title.setFont(FONT_TITLE);
         title.setForeground(TEXT_PRIMARY);
 
-        JLabel subtitle = new JLabel("NEPRA Residential Tariff 2024–25 · Pakistan");
+        JLabel subtitle = new JLabel("NEPRA Residential Tariff 2025 · Pakistan");
         subtitle.setFont(FONT_SMALL);
         subtitle.setForeground(ACCENT_BLUE);
 
@@ -119,7 +133,7 @@ public class MainWindow extends JFrame {
         header.add(left, BorderLayout.WEST);
 
         // Tariff badge
-        RoundedLabel badge = new RoundedLabel("  PKR 27.68 – 71.00 / unit  ", 20);
+        RoundedLabel badge = new RoundedLabel("  PKR 4.78 – 48.46 / unit  ", 20);
         badge.setFont(FONT_SMALL);
         badge.setForeground(ACCENT_BLUE);
         badge.setBackground(new Color(0x0E, 0xA5, 0xE9, 30));
@@ -144,7 +158,7 @@ public class MainWindow extends JFrame {
             new MatteBorder(0, 0, 0, 1, BORDER_COLOR),
             new EmptyBorder(18, 12, 18, 12)
         ));
-        sidebarPanel.setPreferredSize(new Dimension(210, 0));
+        sidebarPanel.setPreferredSize(new Dimension(220, 0));
 
         JLabel heading = new JLabel("APPLIANCES");
         heading.setFont(new Font("Segoe UI", Font.BOLD, 10));
@@ -176,17 +190,15 @@ public class MainWindow extends JFrame {
         ));
 
         String[] slabs = {
-            "≤100 units  PKR 27.68",
-            "101–200     PKR 32.47",
-            "201–300     PKR 38.79",
-            "301–400     PKR 45.00",
-            "401–500     PKR 54.00",
-            "501–600     PKR 59.00",
-            "601–700     PKR 66.00",
-            "700+        PKR 71.00"
+            "Lifeline ≤50u  PKR  4.78",
+            "Protected ≤100u PKR  8.52",
+            "Protected ≤200u PKR 11.51",
+            "Non-Prot ≤300u PKR 34.03",
+            "Non-Prot 300+u PKR 48.46",
+            "Fixed charge:  PKR 75/mo"
         };
 
-        JLabel head = new JLabel("NEPRA TARIFF SLABS");
+        JLabel head = new JLabel("NEPRA 2025 TARIFF");
         head.setFont(new Font("Segoe UI", Font.BOLD, 9));
         head.setForeground(ACCENT_BLUE);
         head.setBorder(new EmptyBorder(0, 0, 6, 0));
